@@ -8,6 +8,7 @@ from imutils.video import VideoStream
 from imutils import face_utils
 from threading import Thread
 import numpy as np
+import pandas as pd
 import playsound
 import argparse
 import imutils
@@ -34,7 +35,7 @@ def eye_aspect_ratio(eye):
 
 	# return the eye aspect ratio
 	return ear
- 
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--shape-predictor", required=True,
@@ -67,6 +68,9 @@ predictor = dlib.shape_predictor(args["shape_predictor"])
 # right eye, respectively
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+
+# initialize data frame
+df = pd.DataFrame()
 
 # start the video stream thread
 print("[INFO] starting video stream thread...")
@@ -111,6 +115,12 @@ while True:
 
 		# average the eye aspect ratio together for both eyes
 		ear = (leftEAR + rightEAR) / 2.0
+
+		# For each iteration, P1,P2, and EAR is stored
+		# in each row and print for visualization
+		df = df.append({'P1(x1,y1)':[x1,y1],'P2(x2,y2)':[x2,y2],
+			'EAR': ear},ignore_index=True)
+		print(df)
 
 		# compute the convex hull for the left and right eye, then
 		# visualize each of the eyes
