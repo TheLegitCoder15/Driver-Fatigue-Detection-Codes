@@ -7,6 +7,7 @@ from scipy.spatial import distance as dist
 from imutils.video import VideoStream
 from imutils import face_utils
 from threading import Thread
+from openpyxl import Workbook
 import numpy as np
 import pandas as pd
 import playsound
@@ -124,8 +125,6 @@ while True:
         df = df.append({'P1(x1,y1)': [x1, y1], 'P2(x2,y2)': [x2, y2],
                         'EAR': ear}, ignore_index=True)
         print(df)
-        export_excel = df.to_excel(r'C:\Users\alnair.m.guevarra\Desktop\drowsiness detection\export_dataframe.xlsx',
-                                   index=None, header=True)
 
         # compute the convex hull for the left and right eye, then
         # visualize each of the eyes
@@ -177,6 +176,10 @@ while True:
 
     # if the `q` key was pressed, break from the loop
     if key == ord("q"):
+        # Code below is for extract dataframe to excel
+        # when q button is pressed
+        # export_excel = df.to_excel(r'C:\Users\user\Documents\Github\Driver-Fatigue-Detection-Codes\Dataframe\export_dataframe.xlsx',
+        #                           index=None, header=True)
         break
 
 # do a bit of cleanup
