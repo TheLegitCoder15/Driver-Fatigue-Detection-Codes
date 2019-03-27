@@ -1,0 +1,9 @@
+Observations 3/28/2019
+1. EAR tends to spike when blink occurs. Can be shown using scatter plot
+2. By testing several times, we can determine the natural EAR 
+using statistics (MEAN, MEDIAN, MODE).
+3. Determine the FPS the camera runs to know the threshold for blink duration.
+4. How to implement head position when it only gets the coordinates?
+5. Machine learning algorithm for face detection can detect really far.
+6. It can only detect up to a certain head tilt.
+7. 
