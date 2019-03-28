@@ -6,4 +6,8 @@ using statistics (MEAN, MEDIAN, MODE).
 4. How to implement head position when it only gets the coordinates?
 5. Machine learning algorithm for face detection can detect really far.
 6. It can only detect up to a certain head tilt.
-7. 
+
+Paper:
+1. IEEE format
+2. Monday SKELETON
+3. Rest of the week Final Paper

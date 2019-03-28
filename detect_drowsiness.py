@@ -86,9 +86,11 @@ while True:
     # grab the frame from the threaded video file stream, resize
     # it, and convert it to grayscale
     # channels)
+    start = time.time()
     frame = vs.read()
     frame = imutils.resize(frame, width=450)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
 
     # detect faces in the grayscale frame
     rects = detector(gray, 0)
@@ -122,9 +124,7 @@ while True:
 
         # For each iteration, P1,P2, and EAR is stored
         # in each row and print for visualization
-        df = df.append({'P1(x1,y1)': [x1, y1], 'P2(x2,y2)': [x2, y2],
-                        'EAR': ear}, ignore_index=True)
-        print(df)
+        
 
         # compute the convex hull for the left and right eye, then
         # visualize each of the eyes
@@ -164,6 +164,13 @@ while True:
             COUNTER = 0
             ALARM_ON = False
 
+        end = time.time()
+        fps = 1/(end-start)
+        print(fps)
+
+        df = df.append({'P1(x1,y1)': [x1, y1], 'P2(x2,y2)': [x2, y2],
+                        'EAR': ear, 'FPS': fps}, ignore_index=True)
+        # print(df)
         # draw the computed eye aspect ratio on the frame to help
         # with debugging and setting the correct eye aspect ratio
         # thresholds and frame counters
