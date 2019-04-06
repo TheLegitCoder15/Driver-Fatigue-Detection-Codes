@@ -4,6 +4,7 @@
 
 # import the necessary packages
 from scipy.spatial import distance as dist
+from imutils.video import FileVideoStream
 from imutils.video import VideoStream
 from imutils import face_utils
 from threading import Thread
@@ -54,16 +55,18 @@ def blink_rate_evaluation(blink_rate):
 
     return blink_level
 
-
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--shape-predictor", required=True,
                 help="path to facial landmark predictor")
 ap.add_argument("-a", "--alarm", type=str, default="",
                 help="path alarm .WAV file")
-ap.add_argument("-w", "--webcam", type=int, default=0,
-                help="index of webcam on system")
-args = vars(ap.parse_args(['-p=shape_predictor_68_face_landmarks.dat','-a=alarm.wav']))
+# ap.add_argument("-w", "--webcam", type=int, default=0,
+                # help="index of webcam on system")
+ap.add_argument("-v", "--video", type=str, default="",
+                help="path to input video file")
+args = vars(ap.parse_args(['-p=shape_predictor_68_face_landmarks.dat','-a=alarm.wav',
+                '-v=blink_detection_demo.mp4']))
 
 # Guide for THRESHOLD determination:
 # Alert: Normal Blink Rate(0.25-0.33blink/s) and Normal Blink Duration(100-400ms)
@@ -73,8 +76,8 @@ args = vars(ap.parse_args(['-p=shape_predictor_68_face_landmarks.dat','-a=alarm.
 # Drowsy: High blink rate(>0.33blink/s) and Long Blink Duration(400ms-1s)
 #      or Normal Blink rate(0.25-0.33blink/s) and Long Blink Duration(400ms-1s)
 # Sleeping: Low Blink rate(<0.25blink/s) and Very Long Blink Duration(>1s)
-EYE_AR_THRESH = 0.20
-EYE_AR_1000MS_FRAMES = 48
+EYE_AR_THRESH = 0.3
+EYE_AR_1000MS_FRAMES = 30
 EYE_AR_400MS_FRAMES = 12
 EYE_AR_100MS_FRAMES = 3
 EYE_BLINK_RATE_LOW = 0.25
@@ -105,7 +108,12 @@ df = pd.DataFrame()
 
 # start the video stream thread
 print("[INFO] starting video stream thread...")
-vs = VideoStream(src=args["webcam"]).start()
+# vs = VideoStream(src=args["webcam"]).start()
+vs = cv2.VideoCapture(args["video"])
+fileStream = True
+# vs = VideoStream(src=0).start()
+# vs = VideoStream(usePiCamera=True).start()
+# fileStream = False
 time.sleep(1.0)
 
 # loop over frames from the video stream
@@ -115,7 +123,12 @@ while True:
     # it, and convert it to grayscale
     # channels)
     start = time.time()
-    frame = vs.read()
+    (grabbed,frame) = vs.read()
+    if fileStream and not grabbed:
+        # Code below is for extract dataframe to excel
+        export_excel = df.to_excel(r'C:\Users\user\Documents\Github\Driver-Fatigue-Detection-Codes\Data\export_dataframe.xlsx',
+                                index=None, header=True)
+        break
     frame = imutils.resize(frame, width=450)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -196,7 +209,7 @@ while True:
 
             else:
                 blink = True
-
+                
         # otherwise, the eye aspect ratio is not below the blink
         # threshold, so reset the counter and alarm
         else:
@@ -230,14 +243,14 @@ while True:
         # draw the computed eye aspect ratio on the frame to help
         # with debugging and setting the correct eye aspect ratio
         # thresholds and frame counters
-        cv2.putText(frame, "Blink Rate Level: {:}".format(blink_level), 
-                    (120, 300),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        cv2.putText(frame, "Blink Duration Level: {:}".format(blink_duration_level), 
-                    (120, 330),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        cv2.putText(frame, "Blink: {:}".format(TOTAL), (10, 330),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         cv2.putText(frame, "EAR: {:.2f}".format(ear), (330, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        cv2.putText(frame, "Blink: {:}".format(TOTAL), (330, 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        cv2.putText(frame, "Blink Rate Level: {:}".format(blink_level), 
+                    (30, 200),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        cv2.putText(frame, "Blink Duration Level: {:}".format(blink_duration_level), 
+                    (30, 215),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     # show the frame
     cv2.imshow("Frame", frame)
@@ -245,12 +258,9 @@ while True:
 
     # if the `q` key was pressed, break from the loop
     if key == ord("q"):
-        # Code below is for extract dataframe to excel
         # when q button is pressed
-        #export_excel = df.to_excel(r'C:\Users\user\Documents\Github\Driver-Fatigue-Detection-Codes\Data\export_dataframe.xlsx',
-        #                          index=None, header=True)
         break
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
-vs.stop()
+# vs.stop()
