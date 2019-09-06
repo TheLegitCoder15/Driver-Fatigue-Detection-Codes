@@ -47,8 +47,7 @@ ap.add_argument("-p", "--shape-predictor", required=True,
 	help="path to facial landmark predictor")
 ap.add_argument("-a", "--alarm", type=int, default=0,
 	help="boolean used to indicate if TraffHat should be used")
-args = vars(ap.parse_args(['--cascade','haarcascade_frontalface_default.xml',
-	'--shape-predictor','shape_predictor_68_face_landmarks.dat']))
+args = vars(ap.parse_args())
 
 # check to see if we are using GPIO/TrafficHat as an alarm
 if args["alarm"] > 0:
@@ -165,7 +164,7 @@ while True:
 			cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
  
 	# show the frame
-	cv2.imshow("RGB Image", frame)
+	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
  
 	# if the `q` key was pressed, break from the loop

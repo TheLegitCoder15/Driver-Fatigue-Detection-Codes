@@ -59,7 +59,7 @@ ap.add_argument("-a", "--alarm", type=str, default="",
                 help="path alarm .WAV file")
 ap.add_argument("-w", "--webcam", type=int, default=0,
                 help="index of webcam on system")
-args = vars(ap.parse_args())
+args = vars(ap.parse_args(["-p","shape_predictor_68_face_landmarks.dat"]))
 
 # define two constants, one for the eye aspect ratio to indicate
 # blink and then a second constant for the number of consecutive
