@@ -7,21 +7,32 @@ from scipy.spatial import distance as dist
 from imutils.video import VideoStream
 from imutils import face_utils
 from threading import Thread
-from openpyxl import Workbook
+#from openpyxl import Workbook
 import numpy as np
-import pandas as pd
+#import pandas as pd
 import playsound
 import argparse
 import imutils
 import time
 import dlib
 import cv2
+import freenect
 
+#function to get RGB image from kinect
+def get_video():
+	array,_ = freenect.sync_get_video()
+    array = cv2.cvtColor(array,cv2.COLOR_RGB2BGR)
+    return array
+
+#function to get depth image from kinect
+def get_depth():
+    array,_ = freenect.sync_get_depth()
+    array = array.astype(np.uint8)
+    return array
 
 def sound_alarm(path):
     # play an alarm sound
     playsound.playsound(path)
-
 
 def eye_aspect_ratio(eye):
     # compute the euclidean distances between the two sets of
@@ -87,7 +98,7 @@ while True:
     # it, and convert it to grayscale
     # channels)
     start = time.time()
-    frame = vs.read()
+    frame = get_video()
     frame = imutils.resize(frame, width=450)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -168,8 +179,8 @@ while True:
         fps = 1/(end-start)
         print(fps)
 
-        df = df.append({'P1(x1,y1)': [x1, y1], 'P2(x2,y2)': [x2, y2],
-                        'EAR': ear, 'FPS': fps}, ignore_index=True)
+        #df = df.append({'P1(x1,y1)': [x1, y1], 'P2(x2,y2)': [x2, y2],
+        #                'EAR': ear, 'FPS': fps}, ignore_index=True)
         # print(df)
         # draw the computed eye aspect ratio on the frame to help
         # with debugging and setting the correct eye aspect ratio
@@ -178,7 +189,7 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
     # show the frame
-    cv2.imshow("Frame", frame)
+    cv2.imshow("RGB image", frame)
     key = cv2.waitKey(1) & 0xFF
 
     # if the `q` key was pressed, break from the loop
