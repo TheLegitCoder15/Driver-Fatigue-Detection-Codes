@@ -18,6 +18,11 @@ def get_video():
 	array = cv2.cvtColor(array,cv2.COLOR_RGB2BGR)
 	return	array
 
+def get_depth():
+	array,_ = freenect.sync_get_depth()
+	array = array.astype(np.uint8)
+	return array
+
 def euclidean_dist(ptA, ptB):
 	# compute and return the euclidean distance between the two
 	# points
@@ -91,6 +96,7 @@ while True:
 	# grab the frame from the threaded video file stream, resize
 	# it, and convert it to grayscale
 	# channels)
+	depth = get_depth()
 	frame = get_video()
 	frame = imutils.resize(frame, width=450)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -167,6 +173,8 @@ while True:
 	# show the frame
 	cv2.imshow("RGB Image", frame)
 	key = cv2.waitKey(1) & 0xFF
+	#display depth image
+	cv2.imshow('Depth image',depth)
  
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):

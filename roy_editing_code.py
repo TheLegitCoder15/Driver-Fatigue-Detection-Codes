@@ -2,10 +2,11 @@
 import cv2
 import numpy as np
 import argparse
+import freenect
  
 #function to get RGB image from kinect
 def get_video():
-   array,_ = freenect.sync_get_video()
+    array,_ = freenect.sync_get_video()
     array = cv2.cvtColor(array,cv2.COLOR_RGB2BGR)
     return array
  
@@ -27,7 +28,8 @@ if __name__ == "__main__":
         cv2.imshow('Depth image',depth)
  
         # quit program when 'esc' key is pressed
-       k = cv2.waitKey(5) & 0xFF
+        k = cv2.waitKey(5) & 0xFF
         if k == 27:
             break
+
 cv2.destroyAllWindows()
